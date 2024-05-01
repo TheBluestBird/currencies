@@ -1,0 +1,19 @@
+button {
+    padding: var(--block-padding);
+    font-size: var(--text-big);
+    color: var(--foreground2);
+    background-color: var(--color4);
+    border-radius: var(--border-radius);
+    transition: var(--background-transition);
+    cursor: pointer;
+    border: none;
+}
+
+button:hover {
+    background-color: var(--color4h);
+}
+
+button:disabled {
+    background-color: var(--color-disabled);
+    cursor: not-allowed;
+}

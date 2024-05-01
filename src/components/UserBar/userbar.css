@@ -1,0 +1,29 @@
+ul.userbar {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: var(--block-gap);
+    justify-content: center;
+    align-items: center;
+}
+
+ul.userbar > li {
+    list-style-type: none;
+}
+
+ul.userbar > li > p {
+    font-size: var(--text-big);
+    color: var(--color1);
+    text-align: center;
+}
+
+@media (max-width: 768px) {
+    ul.userbar {
+        flex-direction: column;
+        width: 100%;
+        grid-column: 1;
+        grid-row: 3;
+        align-self: end;
+        padding: 0 2em 2em;
+    }
+}
