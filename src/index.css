@@ -24,10 +24,18 @@
 
     --block-padding: 0.5em 1em;
     --block-gap: 0.5em;
+
+    --shadow1: 0 3px 5px rgba(0, 0, 0, 0.2);
+    --shadow2: 0 5px 10px rgba(0, 0, 0, 0.2)
 }
 
 * {
     box-sizing: border-box;
+}
+
+html {
+    height: 100%;
+    overflow: hidden;
 }
 
 body {
@@ -37,6 +45,7 @@ body {
 
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    height: 100%;
 }
 
 code {
@@ -44,7 +53,8 @@ code {
 }
 
 #root {
-    padding-top: 70px
+    padding-top: 70px;
+    height: 100%
 }
 
 .fw {

@@ -11,6 +11,7 @@ nav {
     grid-template-rows: 70px auto;
     align-items: center;
     padding: 0 1em;
+    box-shadow: var(--shadow1);
 }
 
 nav > h1.logo {

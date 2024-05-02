@@ -1,6 +1,6 @@
 import React, { createContext, useReducer, useContext, useEffect } from 'react';
 
-import {resumeSession} from "./API";
+import {resumeSession} from "../API";
 
 export enum Actions {
     login,
@@ -29,15 +29,15 @@ const initialState: AuthState = {
     inProgress: false
 };
 
-export const AuthContext = createContext<{
+const AuthContext = createContext<{
     state: AuthState;
     dispatch: React.Dispatch<Action>;
 }>({
     state: initialState,
-    dispatch: () => null  // Dummy function for initial context value
+    dispatch: () => null
 });
 
-const reducer = (state: AuthState, action: Action): AuthState => {
+function reducer (state: AuthState, action: Action): AuthState {
     switch (action.type) {
         case Actions.login:
             return {
@@ -61,7 +61,7 @@ const reducer = (state: AuthState, action: Action): AuthState => {
         default:
             return state;
     }
-};
+}
 
 export function AuthProvider ({ children }: { children: React.ReactNode }) {
     const [state, dispatch] = useReducer(reducer, initialState);

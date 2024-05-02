@@ -1,6 +1,6 @@
 import React from "react";
 
-import { useAuth, Actions as ContextActions} from "../AuthContext";
+import { useAuth, Actions as ContextActions} from "../context/Auth";
 import * as API from "../API"
 
 import {Props as FormProps} from "../forms/Form";

@@ -4,7 +4,7 @@ import "./userbar.css"
 
 import Button from "../Button/Button";
 
-import { useAuth, Actions } from "../../AuthContext";
+import { useAuth, Actions } from "../../context/Auth";
 import { logout } from "../../API";
 
 export default function UserBar({onLogIn, onRegister, onInteraction} : {

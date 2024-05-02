@@ -1,3 +1,5 @@
+import {Currency, SortableKey} from "./data/currency";
+
 const apiDelay = 2000;
 
 export type CallResult = Promise<{
@@ -85,4 +87,77 @@ function makeId (length: number) {
         --length;
     }
     return result;
+}
+
+const server = '/api/';
+const eps = {
+    list: "v1/cryptocurrency/listings/latest"
+};
+
+export type SortDirection = 'asc' | 'desc';
+
+const keyConversion = {
+    rank: "market_cap",
+    name: "name",
+    symbol: "symbol",
+    price: "price"
+};
+
+export async function list (first: number, count: number, sort: SortableKey, direction: SortDirection) {
+    const key = keyConversion[sort];
+    if (key === "market_cap")
+        if (direction === "asc")
+            direction = "desc";
+        else
+            direction = "asc";
+
+    try {
+        const result: Currency[] = [];
+        while (result.length < count) {
+            const url = server + eps.list
+                + "?start=" + (first + result.length)
+                + "&limit=" + (count - result.length)
+                + "&sort=" + key
+                + "&sort_dir=" + direction;
+
+            const response = await fetch(url, {
+                method: 'GET', // Method is GET
+                headers: {
+                    'X-CMC_PRO_API_KEY': API_KEY,
+                    'Accept': 'application/json',
+                }
+            });
+
+            if (!response.ok)
+                throw new Error(`HTTP error! status: ${response.status}`);
+
+            // Parse the JSON response body
+            const data = await response.json();
+            for (const obj of data.data) {
+                const currency = {
+                    id: obj.id,
+                    symbol: obj.symbol,
+                    rank: obj.cmc_rank,
+                    name: obj.name,
+                    values: new Map<string, number>,
+                    price: 0
+                }
+                for (let key in obj.quote) {
+                    if (Object.hasOwn(obj.quote, key)) {
+                        if (key === 'USD')
+                            currency.price = obj.quote[key].price;
+                        else
+                            currency.values.set(key, obj.quote[key].price)
+                    }
+                }
+
+                result.push(currency);
+            }
+        }
+
+        return result;
+    } catch (error) {
+        console.error("Failed to fetch data:", error);
+        throw error; // Re-throw to handle it later if necessary
+    }
 }

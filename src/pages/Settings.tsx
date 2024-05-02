@@ -1,6 +1,4 @@
-import React from "react";
-
-import Page from "../Page";
+import Page from "./Page";
 
 export default class Settings extends Page {
     get title () {return "Settings"}
