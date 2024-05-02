@@ -1,6 +1,7 @@
 const path = require('path');
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
+require('dotenv').config()
 
 module.exports = {
     entry: {
@@ -58,11 +59,11 @@ module.exports = {
         proxy: [
             {
                 context: ["/api"],
-                target: 'https://sandbox-api.coinmarketcap.com/',
+                target: process.env.CMC_HOST,
                 changeOrigin: true,
                 pathRewrite: {'^/api' : ''},
                 headers: {
-                    'X-CMC_PRO_API_KEY': 'b54bcf4d-1bca-4e8e-9a24-22ff2c3d462c'
+                    'X-CMC_PRO_API_KEY': process.env.CMC_TOKEN
                 }
             }
         ]

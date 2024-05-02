@@ -91,7 +91,8 @@ function makeId (length: number) {
 
 const server = '/api/';
 const eps = {
-    list: "v1/cryptocurrency/listings/latest"
+    list: "v1/cryptocurrency/listings/latest",
+    meta: "v1/global-metrics/quotes/latest"
 };
 
 export type SortDirection = 'asc' | 'desc';
@@ -111,53 +112,64 @@ export async function list (first: number, count: number, sort: SortableKey, dir
         else
             direction = "asc";
 
-    try {
-        const result: Currency[] = [];
-        while (result.length < count) {
-            const url = server + eps.list
-                + "?start=" + (first + result.length)
-                + "&limit=" + (count - result.length)
-                + "&sort=" + key
-                + "&sort_dir=" + direction;
+    const result: Currency[] = [];
+    while (result.length < count) {
+        const url = server + eps.list
+            + "?start=" + (first + result.length)
+            + "&limit=" + (count - result.length)
+            + "&sort=" + key
+            + "&sort_dir=" + direction;
 
-            const response = await fetch(url, {
-                method: 'GET', // Method is GET
-                headers: {
-                    'X-CMC_PRO_API_KEY': API_KEY,
-                    'Accept': 'application/json',
-                }
-            });
-
-            if (!response.ok)
-                throw new Error(`HTTP error! status: ${response.status}`);
-
-            // Parse the JSON response body
-            const data = await response.json();
-            for (const obj of data.data) {
-                const currency = {
-                    id: obj.id,
-                    symbol: obj.symbol,
-                    rank: obj.cmc_rank,
-                    name: obj.name,
-                    values: new Map<string, number>,
-                    price: 0
-                }
-                for (let key in obj.quote) {
-                    if (Object.hasOwn(obj.quote, key)) {
-                        if (key === 'USD')
-                            currency.price = obj.quote[key].price;
-                        else
-                            currency.values.set(key, obj.quote[key].price)
-                    }
-                }
-
-                result.push(currency);
+        const response = await fetch(url, {
+            method: 'GET', // Method is GET
+            headers: {
+                'Accept': 'application/json',
             }
-        }
+        });
 
-        return result;
-    } catch (error) {
-        console.error("Failed to fetch data:", error);
-        throw error; // Re-throw to handle it later if necessary
+        if (!response.ok)
+            throw new Error(`HTTP error! status: ${response.status}`);
+
+        const data = await response.json();
+        if (data.status.errorCode)
+            throw new Error(data.status.error_message)
+
+        for (const obj of data.data) {
+            const currency = {
+                id: obj.id,
+                symbol: obj.symbol,
+                rank: obj.cmc_rank,
+                name: obj.name,
+                values: new Map<string, number>,
+                price: 0
+            }
+            for (let key in obj.quote) {
+                if (Object.hasOwn(obj.quote, key)) {
+                    if (key === 'USD')
+                        currency.price = obj.quote[key].price;
+                    else
+                        currency.values.set(key, obj.quote[key].price)
+                }
+            }
+
+            result.push(currency);
+        }
+        if (data.data.length === 0)
+            break;
+    }
+
+    return result;
+}
+
+export async function meta () {
+    const res = await fetch(server + eps.meta);
+    const data = await res.json();
+    if (data.status.errorCode)
+        throw new Error(data.status.error_message);
+
+    return {
+        active: data.data.active_cryptocurrencies as number,
+        total: data.data.total_cryptocurrencies as number,
+        pairs: data.data.active_market_pairs as number
     }
 }

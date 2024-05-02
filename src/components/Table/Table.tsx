@@ -2,40 +2,64 @@ import React, {useEffect, useState} from "react";
 
 import "./table.css"
 
-import {SortableKey} from "../../data/currency";
-import {Action, useCurrencies} from "../../context/Currencies";
-import {list, SortDirection} from "../../API";
+import { SortableKey } from "../../data/currency";
+import { Action, useCurrencies } from "../../context/Currencies";
+import { list, meta, SortDirection } from "../../API";
 
+import Header from "./Header";
 import Row from "./Row"
+import Pagination from "./Pagination"
+import Spinner from "../Spinner/Spinner";
 
 export default function Table() {
     const { state, dispatch } = useCurrencies();
     const [ currentPage, setCurrentPage ] = useState(1);
     const [ sortColumn, setSortColumn ] = useState("rank" as SortableKey);
     const [ sortDirection, setSortDirection ] = useState("asc" as SortDirection);
-    const [ currencies, setCurrencies ] = useState([]);
+    const [ currencies, setCurrencies ] = useState([] as string[]);
+    const [ filter, setFilter] = useState("");
 
     const sortId = sortColumn + ":" + sortDirection;
+    const sorting = state.getSorting(sortId);
+
     useEffect(() => {
-        let {first, count} = state.getSorting(sortId).getNeeded(currentPage);
+        if (state.pages !== -1)
+            return;
+
+        meta().then(function ({active}) {
+            dispatch({
+                type: Action.setAmountOfRecords,
+                amount: active
+            });
+        })
+    }, [state.pages]);
+
+    useEffect(() => {
+        if (state.pages === -1)
+            return;
+
+        let {first, count} = sorting.getNeeded(currentPage);
         if (count === 0)
             return;
 
-        dispatch({ type: Action.requestByOrder, sorting: sortId });
+        dispatch({ type: Action.requestByOrder, sorting: sortId, page: currentPage });
         list(first, count, sortColumn, sortDirection).then(currencies => {
             dispatch({
                 type: Action.successByOrder,
                 result: currencies,
-                sorting: sortId
+                sorting: sortId,
+                page: currentPage
             });
         }, error => {
             dispatch({
                 type: Action.failureByOrder,
                 message: error,
-                sorting: sortId
+                sorting: sortId,
+                page: currentPage
             });
         });
-    }, [currentPage, sortColumn, sortDirection]);
+    }, [currentPage, sortColumn, sortDirection, state.pages]);
+
     function handleSortChange (column: SortableKey) {
         if (sortColumn === column) {
             setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
@@ -45,43 +69,33 @@ export default function Table() {
         }
     }
 
-    function handlePageChange (newPage: number) {
-        setCurrentPage(newPage); // Update page
-    }
-
     return (
         <div className="table">
+            {(state.pages === -1 || sorting.getPage(currentPage).loading) && <Spinner withOverlay={true}/>}
             <table>
-                <thead>
-                <tr>
-                    <th className={`sortable ${sortColumn === 'rank' ? sortDirection : ''}`}
-                        onClick={() => handleSortChange("rank")}>Rank
-                    </th>
-                    <th className={`sortable ${sortColumn === 'name' ? sortDirection : ''}`}
-                        onClick={() => handleSortChange("name")}>Name
-                    </th>
-                    <th className={`sortable ${sortColumn === 'price' ? sortDirection : ''}`}
-                        onClick={() => handleSortChange("price")}>Price (USD)
-                    </th>
-                    {currencies.map(currency => (
-                        <th key={currency}>Price ({currency})</th>
-                    ))}
-                </tr>
-                </thead>
+                <Header {...{
+                    sortColumn, sortDirection, filter, currencies,
+                    onSortChange: handleSortChange,
+                    onFilterChange: setFilter
+                }}/>
                 <tbody>
-                {state.getSortedCurrencies(sortId, currentPage).map(currency => (
-                    <Row key={currency.id} currency={currency} others={currencies}/>
-                ))}
+                    {state.getSortedCurrencies(sortId, currentPage, filter).map(currency => (
+                        <Row {...{
+                            currency,
+                            key: currency.id,
+                            others: currencies
+                        }}/>
+                    ))}
                 </tbody>
             </table>
-            <div style={{display: 'flex', justifyContent: 'center', margin: '20px'}}>
-                <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage <= 1}>
-                    Previous
-                </button>
-                <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage >= 10}>
-                    Next
-                </button>
-            </div>
+            {state.pages > 1 && (
+                <Pagination {...{
+                    currentPage,
+                    totalPages: state.pages,
+                    displayedPages: 8,
+                    onPageChange: setCurrentPage
+                }}/>
+            )}
         </div>
     );
 }

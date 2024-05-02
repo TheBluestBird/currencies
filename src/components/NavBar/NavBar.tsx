@@ -18,8 +18,8 @@ export default function NavBar ({title = "Title", pages = [], onLogIn, onRegiste
     function close () {
         setIsOpen(false);
     }
-    return (<>
-        <nav className={isOpen ? "show" : ""}>
+    return (
+        <nav className={"main" + (isOpen ? " show" : "")}>
             <h1 className="logo">{title}</h1>
             <button className="burger" onClick={() => setIsOpen(!isOpen)}>
                 {isOpen ? cross : burger}
@@ -33,5 +33,5 @@ export default function NavBar ({title = "Title", pages = [], onLogIn, onRegiste
                 <UserBar {...{onLogIn, onRegister, onInteraction: close}}/>
             </div>
         </nav>
-    </>)
+    )
 };

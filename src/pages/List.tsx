@@ -4,10 +4,10 @@ import Page from "./Page";
 import Table from "../components/Table/Table";
 
 export default class List extends Page {
-    get title () {return "List"}
+    get title () {return "List of currencies"}
     get path () {return "/"}
 
     renderContent() {
-        return <Table></Table>
+        return <Table/>
     }
 }

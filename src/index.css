@@ -4,6 +4,7 @@
     --color3: #666;
     --color4: #007BFF;
     --color4h: #0056b3;
+    --color5: #ddd;
     --color-disabled: #ccc;
 
     --foreground1: black;
@@ -17,12 +18,13 @@
     --color-transition: color var(--transition);
     --border-transition: border-color var(--transition);
 
-    --text-normal: 1em;
     --text-small: 0.8em;
+    --text-normal: 1em;
     --text-big: 1.2em;
     --text-huge: 1.5em;
 
     --block-padding: 0.5em 1em;
+    --double-height-padding: 1em;
     --block-gap: 0.5em;
 
     --shadow1: 0 3px 5px rgba(0, 0, 0, 0.2);

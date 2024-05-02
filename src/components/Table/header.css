@@ -1,0 +1,47 @@
+thead {
+    background-color: var(--color5);
+}
+
+th {
+    font-weight: bold;
+    color: var(--foreground4);
+}
+
+th.sortable {
+    cursor: pointer;
+}
+
+th.sortable::after {
+    content: ' ';
+    display: inline-block;
+    width: 0;
+    height: 0;
+    margin-left: 5px;
+}
+
+th.sortable.asc::after {
+    content: '▲';
+}
+
+th.sortable.desc::after {
+    content: '▼';
+}
+
+th {
+    text-align: left;
+    padding: var(--double-height-padding);
+    font-size: var(--text-normal);
+    border-bottom: 1px solid var(--color5);
+}
+
+.header-container {
+    margin: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: normal;
+}
+
+.header-container > .text-input {
+    margin: 0;
+}

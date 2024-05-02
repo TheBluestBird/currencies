@@ -1,0 +1,12 @@
+ul.pagination {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    flex-grow: 1;
+    gap: var(--block-gap);
+    padding: 0;
+}
+
+ul.pagination > li {
+    list-style-type: none;
+}
