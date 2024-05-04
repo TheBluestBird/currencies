@@ -11,7 +11,7 @@ import Settings from "./pages/Settings";
 import Login from "./forms/Login";
 import Signup from "./forms/Signup";
 
-import FormToAPIProxy, {Actions as APIActions} from "./components/FormToAPIProxy";
+import FormToAPIProxy, {Actions as APIActions} from "./context/FormToAPIProxy";
 
 enum CurrentModal {
     nothing,
@@ -20,18 +20,14 @@ enum CurrentModal {
 }
 
 function App() {
-    const pages = [
-        new List({}),
-        new Convertor({}),
-        new Settings({})
-    ]
+    const pages = [List, Convertor, Settings]
 
     const [currentModal, setCurrentModal] = useState(CurrentModal.nothing);
 
-    function onRegister () {
+    function onSignup () {
         setCurrentModal(CurrentModal.register);
     }
-    function onLogIn () {
+    function onLogin () {
         setCurrentModal(CurrentModal.login);
     }
 
@@ -41,12 +37,12 @@ function App() {
 
     return (
         <Router>
-            <NavBar {...{pages, onRegister, onLogIn}}/>
+            <NavBar {...{pages, onSignup, onLogin: onLogin}}/>
             <Routes>{
-                pages.map((page) => <Route {...{
-                    path: page.path,
-                    element: page.render(),
-                    key: page.id
+                pages.map((Page) => <Route {...{
+                    path: Page.path,
+                    element: <Page {...{onLogin, onSignup}} />,
+                    key: Page.path
                 }}/>)
             }</Routes>
 
@@ -56,7 +52,7 @@ function App() {
                         WrappedComponent={Login}
                         action={APIActions.login}
                         onSuccess={onModalClose}
-                        onSwitch={onRegister}
+                        onSwitch={onSignup}
                     />
                 </Modal>
             }
@@ -66,7 +62,7 @@ function App() {
                         WrappedComponent={Signup}
                         action={APIActions.signup}
                         onSuccess={onModalClose}
-                        onSwitch={onLogIn}
+                        onSwitch={onLogin}
                     />
                 </Modal>
             }

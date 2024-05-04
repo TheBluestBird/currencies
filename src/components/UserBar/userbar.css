@@ -12,12 +12,19 @@ ul.userbar > li {
 }
 
 ul.userbar > li > p {
-    font-size: var(--text-big);
     color: var(--color1);
     text-align: center;
 }
 
+ul.userbar > li > button {
+    width: 100%;
+}
+
 @media (max-width: 768px) {
+    ul.userbar > li {
+        width: 100%;
+    }
+
     ul.userbar {
         flex-direction: column;
         width: 100%;

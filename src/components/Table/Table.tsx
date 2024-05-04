@@ -4,14 +4,16 @@ import "./table.css"
 
 import { SortableKey } from "../../data/currency";
 import { Action, useCurrencies } from "../../context/Currencies";
-import { list, meta, SortDirection } from "../../API";
+import { list, SortDirection } from "../../API";
 
 import Header from "./Header";
 import Row from "./Row"
 import Pagination from "./Pagination"
 import Spinner from "../Spinner/Spinner";
 
-export default function Table() {
+export default function Table ({ onLogin } : {
+    onLogin?: () => void;
+}) {
     const { state, dispatch } = useCurrencies();
     const [ currentPage, setCurrentPage ] = useState(1);
     const [ sortColumn, setSortColumn ] = useState("rank" as SortableKey);
@@ -23,19 +25,7 @@ export default function Table() {
     const sorting = state.getSorting(sortId);
 
     useEffect(() => {
-        if (state.pages !== -1)
-            return;
-
-        meta().then(function ({active}) {
-            dispatch({
-                type: Action.setAmountOfRecords,
-                amount: active
-            });
-        })
-    }, [state.pages]);
-
-    useEffect(() => {
-        if (state.pages === -1)
+        if (state.pages === -1 || sorting.getPage(currentPage).loading)
             return;
 
         let {first, count} = sorting.getNeeded(currentPage);
@@ -74,7 +64,7 @@ export default function Table() {
             {(state.pages === -1 || sorting.getPage(currentPage).loading) && <Spinner withOverlay={true}/>}
             <table>
                 <Header {...{
-                    sortColumn, sortDirection, filter, currencies,
+                    sortColumn, sortDirection, filter, currencies, onLogin,
                     onSortChange: handleSortChange,
                     onFilterChange: setFilter
                 }}/>

@@ -12,6 +12,10 @@
     --foreground3: #aaa;
     --foreground4: #111;
 
+    --field-border: 2px solid var(--color3);
+    --field-padding: 1em 30px 1em 1em;
+    --field-height: 3em;
+
     --border-radius: 5px;
     --transition: ease 0.3s;
     --background-transition: background-color var(--transition);
@@ -26,6 +30,7 @@
     --block-padding: 0.5em 1em;
     --double-height-padding: 1em;
     --block-gap: 0.5em;
+    --element-gap: 1em;
 
     --shadow1: 0 3px 5px rgba(0, 0, 0, 0.2);
     --shadow2: 0 5px 10px rgba(0, 0, 0, 0.2)
@@ -59,6 +64,23 @@ code {
     height: 100%
 }
 
-.fw {
-    width: 100%;
+.page {
+    height: 100%;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.page-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--element-gap);
+    position: relative;
+    align-items: center;
+}
+
+.column {
+    display: flex;
+    flex-direction: column;
+    gap: var(--element-gap);
 }

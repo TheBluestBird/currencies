@@ -27,6 +27,10 @@ export default abstract class Form<P extends Props, S extends State> extends Rea
         return (<form onSubmit={(e) => {
                 e.preventDefault();
                 this.submit();
+            }} style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "1em"
             }}>
             {title && (
                 <h2 style={{textAlign: "center"}}>{title}</h2>

@@ -1,6 +1,7 @@
-import React, { createContext, useContext, useReducer } from 'react';
+import React, { createContext, useContext, useEffect, useReducer } from 'react';
 
-import {Currency}  from "../data/currency"
+import {Currency, IndexableKey, IndexableValue, StringKey} from "../data/currency"
+import { meta } from "../API";
 
 const pageSize = 100;
 
@@ -78,9 +79,50 @@ class Sorting {
     }
 }
 
+class Index<T extends IndexableValue> {
+    public values = new Map<T, Set<number>>;
+    private _loading = false;
+    private _error?: string;
+
+    addValue (value: T, id: number) {
+        let ids: Set<number> | undefined = this.values.get(value);
+        if (!ids) {
+            ids = new Set<number>([id])
+            this.values.set(value, ids);
+            return;
+        }
+
+        ids.add(id);
+    }
+    copy () {
+        const idx = new Index<T>();
+        idx._loading = this._loading;
+        idx._error = this._error;
+
+        for (const [value, ids] of this.values)
+            idx.values.set(value, new Set(ids));
+
+        return idx;
+    }
+
+    get loading () {return this._loading}
+    set loading (value) {
+        this._loading = value;
+        if (value && this._error)
+            delete this._error;
+    }
+    get error () {return this._error || ""}
+    set error (value: string) {
+        this._error = value;
+        this._loading = false;
+    }
+}
+type PossibleIndex = Index<string> | Index<number>;
+
 export class State {
     currencies = new Map<number, Currency>();
     orders = new Map<string, Sorting>;
+    indices = new Map<IndexableKey, PossibleIndex>;
     pages = -1;
 
     copy () {
@@ -92,6 +134,9 @@ export class State {
 
         for (const [id, order] of this.orders)
             newState.orders.set(id, order.copy());
+
+        for (const [field, index] of this.indices)
+            newState.indices.set(field, index.copy());
 
         return newState;
     }
@@ -120,6 +165,44 @@ export class State {
 
         return result;
     }
+    //dammit! I need specialization here!
+    getCurrenciesByStringField (field: StringKey, value: string) : Currency[] {
+        let index = this.indices.get(field);
+        if (!index) {
+            index = new Index<string>();
+            for (const [id, currency] of this.currencies)
+                index.addValue(currency[field], id);
+        }
+
+        let ids = (index as Index<string>).values.get(value);
+        if (!ids)
+            return [];
+
+        const result = [];
+        for (const id of ids)
+            result.push(this.currencies.get(id) as Currency);
+
+        return result;
+    }
+    successByOrder (sorting: string, page: number, result: Currency[]) {
+        const srt = this.getSorting(sorting);
+        const pg = srt.getPage(page);
+        pg.loading = false;
+        for (const currency of result) {
+            if (srt.appendUnique(currency.id)) {
+                this.currencies.set(currency.id, currency);
+                pg.order.push(currency.id);
+
+                for (const [field, index] of this.indices) {
+                    const value = currency[field];
+                    if (typeof value === 'string')
+                        (index as Index<string>).addValue(value, currency.id);
+                    else
+                        (index as Index<number>).addValue(value, currency.id);
+                }
+            }
+        }
+    }
 
     static satisfies (currency: Currency, filter: string) {
         if (!filter.length)
@@ -146,7 +229,7 @@ type CurrencyAction =
 
 const initialState = new State();
 
-const CurrencyContext = createContext<{
+export const CurrencyContext = createContext<{
     state: State;
     dispatch: React.Dispatch<CurrencyAction>;
 }>({
@@ -161,15 +244,7 @@ function currencyReducer (state: State, action: CurrencyAction): State {
             newState.getSorting(action.sorting).getPage(action.page).loading = true;
             break;
         case Action.successByOrder:
-            const sorting: Sorting = newState.getSorting(action.sorting);
-            const page = sorting.getPage(action.page);
-            page.loading = false;
-            for (const currency of action.result) {
-                if (sorting.appendUnique(currency.id)) {
-                    newState.currencies.set(currency.id, currency);
-                    page.order.push(currency.id)
-                }
-            }
+            newState.successByOrder(action.sorting, action.page, action.result);
             break;
         case Action.failureByOrder:
             newState.getSorting(action.sorting).getPage(action.page).error = action.message;
@@ -186,6 +261,14 @@ export function CurrencyProvider ({ children } : {
     children: React.ReactNode
 }) {
     const [state, dispatch] = useReducer(currencyReducer, initialState);
+    useEffect(() => {
+        meta().then(function ({active}) {
+            dispatch({
+                type: Action.setAmountOfRecords,
+                amount: active
+            });
+        })
+    }, []);
 
     return (
         <CurrencyContext.Provider value={{ state, dispatch }}>

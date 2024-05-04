@@ -5,31 +5,35 @@ import {resumeSession} from "../API";
 export enum Actions {
     login,
     logout,
-    lock
+    lock,
+    unlock
 }
 
 interface AuthState {
     user: string;
     sessionId: string;
-    inProgress: boolean
+    inProgress: boolean;
+    currencies: string[];
 }
 export interface AuthAction {
     type: Actions.login;
     user: string;
     sessionId: string;
+    currencies: [];
 }
 interface SimpleAction {
-    type: Actions.logout | Actions.lock;
+    type: Actions.logout | Actions.lock | Actions.unlock;
 }
 type Action = AuthAction | SimpleAction
 
 const initialState: AuthState = {
     user: '',
     sessionId: '',
-    inProgress: false
+    inProgress: false,
+    currencies: []
 };
 
-const AuthContext = createContext<{
+export const AuthContext = createContext<{
     state: AuthState;
     dispatch: React.Dispatch<Action>;
 }>({
@@ -58,6 +62,11 @@ function reducer (state: AuthState, action: Action): AuthState {
                 ...state,
                 inProgress: true
             }
+        case Actions.unlock:
+            return {
+                ...state,
+                inProgress: false
+            }
         default:
             return state;
     }
@@ -76,7 +85,8 @@ export function AuthProvider ({ children }: { children: React.ReactNode }) {
             dispatch({
                 type: Actions.login,
                 user: login,
-                sessionId: savedSessionId
+                sessionId: savedSessionId,
+                currencies: []
             });
         }, () => {
             dispatch({type: Actions.logout});

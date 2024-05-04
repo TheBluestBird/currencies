@@ -7,13 +7,14 @@ import { SortableKey } from "../../data/currency";
 import { SortDirection } from "../../API";
 import TextField from "../TextField/TextField";
 
-export default function Header({ filter, onFilterChange, sortColumn, onSortChange, sortDirection, currencies } : {
+export default function Header({ filter, onFilterChange, sortColumn, onSortChange, sortDirection, currencies, onLogin } : {
     filter: string;
     onFilterChange: (filter: string) => void;
     sortColumn: SortableKey;
     onSortChange: (column: SortableKey) => void;
     sortDirection: SortDirection;
-    currencies: string[]
+    currencies: string[];
+    onLogin?: () => void;
 }) {
     const { state } = useAuth();
 
@@ -28,7 +29,7 @@ export default function Header({ filter, onFilterChange, sortColumn, onSortChang
                             onChange={onFilterChange}
                         />
                         {state.user.length === 0 ?
-                            <i>Please log in to control additional currencies</i> :
+                            <i>Please <a href="#" onClick={onLogin}>Login</a> to control additional currencies</i> :
                             <i>Additional currencies</i>
                         }
                     </div>

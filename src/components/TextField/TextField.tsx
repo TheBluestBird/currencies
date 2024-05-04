@@ -1,15 +1,15 @@
-import React, { useState } from 'react';
+import React, {HTMLInputTypeAttribute, useState} from 'react';
 import "./textfield.css"
 
 export default function TextField ({
-    value, onChange, placeholder = '', type = 'text', label, disabled = false
+    value = "", onChange, placeholder = '', type = 'text', label, disabled
 } : {
-    value: string;
-    onChange: (value: string) => void;
+    value?: string;
+    onChange?: (value: string) => void;
     placeholder?: string;
-    type?: string;
+    type?: HTMLInputTypeAttribute;
     label?: string;
-    disabled?: boolean
+    disabled?: boolean;
 }) {
     const [inputType, setInputType] = useState(type);
     const toggleShowPassword = () => {
@@ -22,7 +22,7 @@ export default function TextField ({
             <input {...{
                 value, placeholder, disabled,
                 type: inputType,
-                onChange: e => onChange(e.target.value),
+                onChange: e => onChange && onChange(e.target.value),
                 className: "input-field"
             }}
             />

@@ -7,11 +7,11 @@ import UserBar from "../UserBar/UserBar"
 
 const burger = String.fromCharCode(9776);
 const cross = String.fromCharCode(10761);
-export default function NavBar ({title = "Title", pages = [], onLogIn, onRegister} : {
+export default function NavBar ({ title = "Title", pages = [], onLogin, onSignup } : {
     title?: string
-    pages?: Page[],
-    onLogIn: () => void,
-    onRegister: () => void
+    pages?: (typeof Page)[],
+    onLogin: () => void,
+    onSignup: () => void
 }) {
     const [isOpen, setIsOpen] = useState(false);
 
@@ -26,11 +26,11 @@ export default function NavBar ({title = "Title", pages = [], onLogIn, onRegiste
             </button>
             <div className="bars">
                 <ul className="navbar">{
-                    pages.map(page => <li key={page.id}>
+                    pages.map(page => <li key={page.path}>
                         <Link to={page.path} onClick={close}>{page.title}</Link>
                     </li>)
                 }</ul>
-                <UserBar {...{onLogIn, onRegister, onInteraction: close}}/>
+                <UserBar {...{onLogin, onSignup, onInteraction: close}}/>
             </div>
         </nav>
     )

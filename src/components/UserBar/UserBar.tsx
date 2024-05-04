@@ -7,9 +7,9 @@ import Button from "../Button/Button";
 import { useAuth, Actions } from "../../context/Auth";
 import { logout } from "../../API";
 
-export default function UserBar({onLogIn, onRegister, onInteraction} : {
-    onLogIn: () => void,
-    onRegister: () => void
+export default function UserBar({onLogin, onSignup, onInteraction} : {
+    onLogin: () => void,
+    onSignup: () => void
     onInteraction: () => void
 }) {
     const { state, dispatch} = useAuth();
@@ -18,10 +18,9 @@ export default function UserBar({onLogIn, onRegister, onInteraction} : {
     return (
         <ul className="userbar">
             {isAuthenticated ? (<>
-                <li className="fw"><p>{state.user}</p></li>
-                <li className="fw">
+                <li><p>You are logged in as <b>{state.user}</b></p></li>
+                <li>
                     <Button
-                        fullWidth={true}
                         disabled={state.inProgress}
                         onClick={async () => {
                             dispatch({type: Actions.logout});
@@ -36,12 +35,12 @@ export default function UserBar({onLogIn, onRegister, onInteraction} : {
                     >Logout</Button>
                 </li>
             </>) : (<>
-                <li className="fw"><Button fullWidth={true} onClick={() => {
-                    onLogIn();
+                <li><Button onClick={() => {
+                    onLogin();
                     onInteraction();
                 }} disabled={state.inProgress}>Login</Button></li>
-                <li className="fw"><Button fullWidth={true} onClick={() => {
-                    onRegister();
+                <li><Button onClick={() => {
+                    onSignup();
                     onInteraction();
                 }} disabled={state.inProgress}>Register</Button></li>
             </>)}

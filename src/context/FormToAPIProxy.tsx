@@ -1,6 +1,6 @@
 import React from "react";
 
-import { useAuth, Actions as ContextActions} from "../context/Auth";
+import { useAuth, Actions as ContextActions} from "./Auth";
 import * as API from "../API"
 
 import {Props as FormProps} from "../forms/Form";
@@ -41,6 +41,7 @@ export default function FormToAPIProxy ({WrappedComponent, action, onSuccess, on
                             break;
                     }
                 } catch (e) {
+                    dispatch({type: ContextActions.unlock})
                     return {
                         result: false,
                         message: e as string
@@ -56,7 +57,8 @@ export default function FormToAPIProxy ({WrappedComponent, action, onSuccess, on
                     dispatch({
                         type: ContextActions.login,
                         user: login,
-                        sessionId: sessionId
+                        sessionId: sessionId,
+                        currencies: []
                     });
                 } else {
                     dispatch({type: ContextActions.logout});

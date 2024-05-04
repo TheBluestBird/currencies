@@ -1,29 +1,27 @@
 import React from "react";
 
-let counter = 0;
-export default abstract class Page extends React.Component {
-    abstract get path () : string;
-    abstract get title () : string;
+export interface Props {
+    onLogin?: () => void
+    onSignup?: () => void
+}
+
+export default abstract class Page<P extends Props = Props, S = {}> extends React.Component<P, S> {
+    static title: string;
+    static path: string;
+    props!: P;
 
     render () {
         return (
-            <div style={{
-                height: "100%",
-                overflow: "auto"
-            }}>
+            <div className="page">
                 <h1 style={{
                     textAlign: "center"
-                }}>{this.title}</h1>
+                }}>{(this.constructor as typeof Page).title}</h1>
                 {this.renderContent()}
             </div>
         );
     }
 
-    renderContent () {
-        return <></>
-    }
-
-    get id () {
-        return ++counter
+    protected renderContent () {
+        return <div className="page-content"></div>
     }
 }
