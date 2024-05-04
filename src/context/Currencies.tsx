@@ -267,6 +267,12 @@ export function CurrencyProvider ({ children } : {
                 type: Action.setAmountOfRecords,
                 amount: active
             });
+        }, function (error) {
+            console.error(error);
+            dispatch({
+                type: Action.setAmountOfRecords,
+                amount: 0
+            });
         })
     }, []);
 

@@ -3,7 +3,7 @@ import React from "react";
 import { useAuth, Actions as ContextActions} from "./Auth";
 import * as API from "../API"
 
-import {Props as FormProps} from "../forms/Form";
+import { Props as FormProps } from "../forms/Form";
 
 export enum Actions {
     login,
@@ -26,15 +26,15 @@ export default function FormToAPIProxy ({WrappedComponent, action, onSuccess, on
         <WrappedComponent {...{
             onSuccess, onError, onSwitch,
             apiCall: async (login, password) => {
-                let sessionId: string | undefined;
+                let info: API.SessionData | undefined;
                 dispatch({type: ContextActions.lock});
                 try {
                     switch (action) {
                         case Actions.login:
-                            sessionId = await API.login(login, password);
+                            info = await API.login(login, password);
                             break;
                         case Actions.signup:
-                            sessionId = await API.signup(login, password);
+                            info = await API.signup(login, password);
                             break;
                         case Actions.logout:
                             await API.logout(state.sessionId);
@@ -48,7 +48,7 @@ export default function FormToAPIProxy ({WrappedComponent, action, onSuccess, on
                     };
                 }
                 if (action !== Actions.logout) {
-                    if (!sessionId)
+                    if (!info)
                         return {
                             result: false,
                             message: "Server didn't return valid response"
@@ -56,9 +56,7 @@ export default function FormToAPIProxy ({WrappedComponent, action, onSuccess, on
 
                     dispatch({
                         type: ContextActions.login,
-                        user: login,
-                        sessionId: sessionId,
-                        currencies: []
+                        payload: info
                     });
                 } else {
                     dispatch({type: ContextActions.logout});
@@ -66,7 +64,6 @@ export default function FormToAPIProxy ({WrappedComponent, action, onSuccess, on
 
                 return {result: true};
             }
-        }}
-        />
+        }}/>
     );
 }

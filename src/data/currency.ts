@@ -6,6 +6,12 @@ export interface Currency {
     price: number;
     values: Map<string, number>
 }
+
+export interface AUX {
+    symbol: string;
+    comment: string;
+}
+
 export type NumericKey = 'rank' | 'price';
 export type StringKey = 'name' | 'symbol';
 export type SortableKey = NumericKey | StringKey;

@@ -9,7 +9,8 @@ export enum Alignment {
 }
 
 export default function Button ({
-    children, onClick, type = 'button', className = '', disabled = false, fullWidth = false, align = Alignment.none
+    children, onClick, type = 'button', className = '', disabled = false,
+    fullWidth = false, align = Alignment.none, tooltip = ''
 } : {
     children: React.ReactNode;
     onClick?: () => void;
@@ -17,7 +18,8 @@ export default function Button ({
     className?: string;
     disabled?: boolean;
     fullWidth?: boolean;
-    align?: Alignment
+    align?: Alignment;
+    tooltip?: string
 }) {
     const classNames = [];
     if (fullWidth)
@@ -43,6 +45,7 @@ export default function Button ({
                 width: fullWidth ? "100%" : "",
                 margin: margin
             }}
+            title={tooltip}
         >
             {children}
         </button>

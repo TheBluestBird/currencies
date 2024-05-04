@@ -1,6 +1,6 @@
 import React, { createContext, useReducer, useContext, useEffect } from 'react';
 
-import {resumeSession} from "../API";
+import { resumeSession, SessionData, UserData } from "../API";
 
 export enum Actions {
     login,
@@ -13,13 +13,11 @@ interface AuthState {
     user: string;
     sessionId: string;
     inProgress: boolean;
-    currencies: string[];
+    data?: UserData
 }
 export interface AuthAction {
     type: Actions.login;
-    user: string;
-    sessionId: string;
-    currencies: [];
+    payload: SessionData
 }
 interface SimpleAction {
     type: Actions.logout | Actions.lock | Actions.unlock;
@@ -29,8 +27,7 @@ type Action = AuthAction | SimpleAction
 const initialState: AuthState = {
     user: '',
     sessionId: '',
-    inProgress: false,
-    currencies: []
+    inProgress: false
 };
 
 export const AuthContext = createContext<{
@@ -46,8 +43,9 @@ function reducer (state: AuthState, action: Action): AuthState {
         case Actions.login:
             return {
                 ...state,
-                user: action.user,
-                sessionId: action.sessionId,
+                user: action.payload.name,
+                sessionId: action.payload.sessionId,
+                data: action.payload,
                 inProgress: false
             };
         case Actions.logout:
@@ -81,12 +79,13 @@ export function AuthProvider ({ children }: { children: React.ReactNode }) {
             return;
 
         dispatch({type: Actions.lock});
-        resumeSession(savedSessionId).then(login => {
+        resumeSession(savedSessionId).then(info => {
             dispatch({
                 type: Actions.login,
-                user: login,
-                sessionId: savedSessionId,
-                currencies: []
+                payload: {
+                    ...info,
+                    sessionId: savedSessionId
+                }
             });
         }, () => {
             dispatch({type: Actions.logout});

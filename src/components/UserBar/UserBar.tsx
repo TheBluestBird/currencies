@@ -18,7 +18,7 @@ export default function UserBar({onLogin, onSignup, onInteraction} : {
     return (
         <ul className="userbar">
             {isAuthenticated ? (<>
-                <li><p>You are logged in as <b>{state.user}</b></p></li>
+                <li><p>You are logged in as<br/><b>{state.user}</b></p></li>
                 <li>
                     <Button
                         disabled={state.inProgress}
