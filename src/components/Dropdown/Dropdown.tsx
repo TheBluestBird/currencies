@@ -13,7 +13,8 @@ export default function Dropdown ({ label, option = "", options = [], onChange, 
     const dropdownRef = useRef<HTMLDivElement>(null);
 
     const handleToggleDropdown = () => {
-        setIsOpen(!isOpen);
+        if (isOpen || (options && options.length > 0))
+            setIsOpen(!isOpen);
     };
 
     const handleOptionClick = (option: string) => {

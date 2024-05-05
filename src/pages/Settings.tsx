@@ -1,14 +1,14 @@
 import React from "react";
 
-import Page, {Props as PageProps} from "./Page";
-import {Actions, AuthContext} from "../context/Auth";
-import {updateCurrencies, updatePassword, updatePersonalData} from "../API";
+import Page, { Props as PageProps } from "./Page";
+import { Actions, AuthContext } from "../context/Auth";
+import { updateCurrencies, updatePassword, updatePersonalData } from "../API";
 
-import Spinner from "../components/Spinner/Spinner";
-import TextField from "../components/TextField/TextField";
-import Button, {Alignment} from "../components/Button/Button";
-import CurrencyList from "../components/CurrencyList/CurrencyList";
-import {AUX} from "../data/currency";
+import Spinner from "components/Spinner";
+import TextField from "components/TextField";
+import Button, { Alignment } from "components/Button";
+import CurrencyList from "components/CurrencyList";
+import { AUX } from "../data/currency";
 
 interface State {
     userName: string;
@@ -29,7 +29,7 @@ export default class Settings extends Page<PageProps, State> {
     static contextType = AuthContext;
     context!: React.ContextType<typeof AuthContext>;
     state = {
-        userName: "",
+        userName: "undefined",
         age: NaN,
         currencies: [],
         password: "",
@@ -65,81 +65,96 @@ export default class Settings extends Page<PageProps, State> {
             alignSelf: "center",
             marginBottom: "1em"
         }}>
-            <div className="column" style={{position: "relative"}}>
-                {this.state.personalInProgress && <Spinner withOverlay={true}/>}
-                <h3>Personal</h3>
-                <TextField {...{
-                    label: "User name",
-                    value: this.name,
-                    onChange: text => this.setState({userName: text}),
-                    placeholder: "Please enter user name"
-                }}/>
-                <TextField {...{
-                    label: "Age",
-                    type: "number",
-                    value: this.age,
-                    onChange: text => this.setState({age: parseInt(text) || 0}),
-                    placeholder: "You age"
-                }}/>
-                <Button {...{
-                    align: Alignment.right,
-                    onClick: this.savePersonal.bind(this)
-                }}>Save</Button>
-            </div>
+            {this.renderPersonal()}
             <hr/>
-            <div className="column" style={{position: "relative"}}>
-                <h3>Currencies</h3>
-                <CurrencyList {...{
-                    currencies: this.currencies,
-                    onChange: newCurrencies => {
-                        if (this.state.currenciesInProgress)
-                            return;
-
-                        this.setState({
-                            currencies: newCurrencies
-                        });
-                    },
-                    onSave: this.saveCurrencies.bind(this)
-                }}>
-                    {this.state.currenciesInProgress && <Spinner withOverlay={true}/>}
-                </CurrencyList>
-            </div>
+            {this.renderCurrencyList()}
             <hr/>
-            <div className="column" style={{position: "relative"}}>
-                {this.state.securityInProgress && <Spinner withOverlay={true}/>}
-                <h3>Security</h3>
-                <TextField {...{
-                    label: "New password",
-                    type: "password",
-                    value: this.state.password,
-                    onChange: text => this.setState({password: text})
-                }}/>
-                <TextField {...{
-                    label: "Confirmation",
-                    type: "password",
-                    value: this.state.confirmation,
-                    onChange: text => this.setState({confirmation: text})
-                }}/>
-                <TextField {...{
-                    label: "Current password",
-                    type: "password",
-                    value: this.state.currentPassword,
-                    onChange: text => this.setState({currentPassword: text})
-                }}/>
-                <Button {...{
-                    align: Alignment.right,
-                    disabled: !this.securityValid,
-                    tooltip: this.securityMessage,
-                    onClick: this.saveSecurity.bind(this)
-                }}>Save</Button>
-            </div>
+            {this.renderSecurity()}
         </div>
     }
 
-    private get name () {
-        return this.state.userName || this.context.state.user;
+    private renderPersonal () {
+        return (<div className="column" style={{position: "relative"}}>
+            {this.state.personalInProgress && <Spinner withOverlay={true}/>}
+            <h3>Personal</h3>
+            <TextField {...{
+                label: "User name",
+                value: this.name,
+                onChange: text => this.setState({userName: text}),
+                placeholder: "Please enter user name"
+            }}/>
+            <TextField {...{
+                label: "Age",
+                type: "number",
+                value: this.age,
+                onChange: text => this.setState({age: parseInt(text) || 0}),
+                placeholder: "You age"
+            }}/>
+            <Button {...{
+                align: Alignment.right,
+                onClick: this.savePersonal.bind(this),
+                disabled: !this.personalValid,
+                tooltip: this.personalMessage
+            }}>Save</Button>
+        </div>);
     }
-    private get age () {
+    private renderCurrencyList() {
+        return (<div className="column" style={{position: "relative"}}>
+            <h3>Currencies</h3>
+            <CurrencyList {...{
+                currencies: this.currencies,
+                onChange: newCurrencies => {
+                    if (this.state.currenciesInProgress)
+                        return;
+
+                    this.setState({
+                        currencies: newCurrencies
+                    });
+                },
+                onSave: this.saveCurrencies.bind(this)
+            }}>
+                {this.state.currenciesInProgress && <Spinner withOverlay={true}/>}
+            </CurrencyList>
+        </div>);
+    }
+    private renderSecurity() {
+        return (<div className="column" style={{position: "relative"}}>
+            {this.state.securityInProgress && <Spinner withOverlay={true}/>}
+            <h3>Security</h3>
+            <TextField {...{
+                label: "Current password",
+                type: "password",
+                value: this.state.currentPassword,
+                onChange: text => this.setState({currentPassword: text})
+            }}/>
+            <TextField {...{
+                label: "New password",
+                type: "password",
+                value: this.state.password,
+                onChange: text => this.setState({password: text})
+            }}/>
+            <TextField {...{
+                label: "Confirmation",
+                type: "password",
+                value: this.state.confirmation,
+                onChange: text => this.setState({confirmation: text})
+            }}/>
+            <Button {...{
+                align: Alignment.right,
+                disabled: !this.securityValid,
+                tooltip: this.securityMessage,
+                onClick: this.saveSecurity.bind(this)
+            }}>Save</Button>
+        </div>);
+    }
+
+    private get name() {
+        return this.state.userName === "undefined" ?
+            this.context.state.user :
+            this.state.userName;
+    }
+
+    private get age() {
         if (this.state.age === this.state.age)
             return this.state.age.toString();
 
@@ -148,7 +163,8 @@ export default class Settings extends Page<PageProps, State> {
 
         return "0";
     }
-    private get currencies (): AUX[] {
+
+    private get currencies(): AUX[] {
         if (this.state.currencies.length !== 0)
             return this.state.currencies;
 
@@ -157,11 +173,27 @@ export default class Settings extends Page<PageProps, State> {
         else
             return [];
     }
-    private get securityValid () {
+
+    private get personalValid() {
+        return this.name.length > 0 && this.name.length < 45;
+    }
+
+    private get personalMessage() {
+        if (this.name.length === 0)
+            return "User name can not be empty";
+
+        if (this.name.length > 45)
+            return "User name is too long";
+
+        return "Save your personal info";
+    }
+
+    private get securityValid() {
         return this.state.password !== "" &&
             this.state.currentPassword !== "" &&
             this.state.password === this.state.confirmation;
     }
+
     private get securityMessage () {
         if (this.state.password === "")
             return "Enter new password";

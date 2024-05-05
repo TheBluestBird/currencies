@@ -7,10 +7,20 @@ button {
     transition: var(--background-transition);
     cursor: pointer;
     border: none;
+    box-shadow: var(--shadow1);
+}
+button:hover {background-color: var(--color4h);}
+button:active:not(:disabled) {
+    transform: scale(0.95) translateY(1px);
+    box-shadow: var(--shadow3);
 }
 
-button:hover {
-    background-color: var(--color4h);
+button.danger {background-color: var(--color-danger);}
+button.danger:hover {background-color: var(--color-dangerh);}
+
+button.toggled {
+    transform: scale(0.97);
+    box-shadow: var(--shadow3), 0 0 0 100px rgba(0, 0, 0, 0.3) inset;
 }
 
 button:disabled {

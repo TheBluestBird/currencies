@@ -1,7 +1,7 @@
 import React from "react";
 
 import Page from "./Page";
-import Table from "../components/Table/Table";
+import Table from "components/Table";
 
 export default class List extends Page {
     static title = "List of currencies";

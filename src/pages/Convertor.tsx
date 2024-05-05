@@ -2,9 +2,9 @@ import React from "react";
 
 import Page from "./Page";
 
-import TextField from "../components/TextField/TextField";
-import Dropdown from "../components/Dropdown/Dropdown";
-import Spinner from "../components/Spinner/Spinner";
+import TextField from "components/TextField";
+import Dropdown from "components/Dropdown";
+import Spinner from "components/Spinner";
 
 import { toFormattedString, fromFormattedString, SortableKey } from "../data/currency";
 import { Action, CurrencyContext } from "../context/Currencies";

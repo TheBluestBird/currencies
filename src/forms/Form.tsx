@@ -1,7 +1,7 @@
 import React from "react";
 
-import Button from "../components/Button/Button";
-import Spinner from "../components/Spinner/Spinner";
+import Button from "components/Button";
+import Spinner from "components/Spinner";
 
 export interface Props {
     onSuccess?: () => void;
@@ -51,7 +51,8 @@ export default abstract class Form<P extends Props, S extends State> extends Rea
                     <Button {...{
                         type: "submit",
                         fullWidth: true,
-                        disabled: !this.valid || this.state.inProgress
+                        disabled: !this.valid || this.state.inProgress,
+                        tooltip: this.submitMessage
                     }} >{title || "Submit"}</Button>
                 }
             </div>
@@ -74,4 +75,8 @@ export default abstract class Form<P extends Props, S extends State> extends Rea
     protected renderLastPart() {
         return (<></>);
     }
+
+    protected get submitMessage() {
+        return "";
+    };
 }

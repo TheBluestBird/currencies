@@ -8,10 +8,7 @@ export enum Alignment {
     center
 }
 
-export default function Button ({
-    children, onClick, type = 'button', className = '', disabled = false,
-    fullWidth = false, align = Alignment.none, tooltip = ''
-} : {
+export interface Props {
     children: React.ReactNode;
     onClick?: () => void;
     type?: 'button' | 'submit' | 'reset';
@@ -19,11 +16,25 @@ export default function Button ({
     disabled?: boolean;
     fullWidth?: boolean;
     align?: Alignment;
-    tooltip?: string
-}) {
+    tooltip?: string;
+    danger?: boolean;
+}
+
+export default function Button ({
+    children, onClick, type = 'button', className = '', disabled = false,
+    fullWidth = false, align = Alignment.none, tooltip = '', danger = false
+} : Props) {
     const classNames = [];
+    if (className)
+        classNames.push(className);
+
     if (fullWidth)
         classNames.push('fw')
+
+    if (danger)
+        classNames.push("danger");
+
+    className = classNames.join(" ");
 
     let margin = "";
     switch (align) {

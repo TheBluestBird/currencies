@@ -17,7 +17,7 @@
     padding: var(--field-padding);
     border: var(--field-border);
     border-radius: var(--border-radius);
-    transition: var(--border-transition);
+    transition: var(--border-transition), var(--background-transition);
     font-size: var(--text-normal);
     height: var(--field-height);
 }
@@ -37,8 +37,9 @@
 }
 
 .input-field:disabled {
-    background-color: var(--color-disabled);
+    background-color: var(--field-disabled);
     cursor: not-allowed;
+    border-color: var(--color-disabled);
 }
 
 input[type="number"]::-webkit-inner-spin-button,

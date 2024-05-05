@@ -1,8 +1,8 @@
 import React, {useState} from 'react';
 import {BrowserRouter as Router, Route, Routes} from "react-router-dom";
 
-import NavBar from "./components/NavBar/NavBar";
-import Modal from "./components/Modal/Modal";
+import NavBar from "components/NavBar";
+import Modal from "components/Modal";
 
 import List from "./pages/List";
 import Convertor from "./pages/Convertor";

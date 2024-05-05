@@ -17,6 +17,7 @@ nav.main {
 
 nav.main > h1.logo {
     color: var(--foreground2);
+    width: 180px;
 }
 
 nav.main > div.bars {
@@ -43,8 +44,13 @@ nav.main ul.navbar > li {
     transition: var(--background-transition);
 }
 
-nav.main ul.navbar > li:hover {
+nav.main ul.navbar > li:hover,
+nav.main ul.navbar > li.current {
     background-color: var(--color3);
+}
+nav.main  ul.navbar > li:hover > a,
+nav.main  ul.navbar > li.current > a {
+    color: var(--foreground4);
 }
 
 nav.main ul.navbar > li > a {
@@ -57,9 +63,7 @@ nav.main ul.navbar > li > a {
     transition: var(--color-transition);
 }
 
-nav.main  ul.navbar > li:hover > a {
-    color: var(--foreground4);
-}
+
 
 nav.main > button.burger {
     display: none;

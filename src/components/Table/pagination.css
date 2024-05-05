@@ -9,4 +9,11 @@ ul.pagination {
 
 ul.pagination > li {
     list-style-type: none;
+    line-height: 2em;
+}
+
+@media (max-width: 768px) {
+    ul.pagination button {
+        padding: var(--block-half-padding);
+    }
 }

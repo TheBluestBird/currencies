@@ -9,7 +9,7 @@ import { list, SortDirection } from "../../API";
 import Header from "./Header";
 import Row from "./Row"
 import Pagination from "./Pagination"
-import Spinner from "../Spinner/Spinner";
+import Spinner from "components/Spinner";
 
 export default function Table ({ onLogin } : {
     onLogin?: () => void;
@@ -18,7 +18,7 @@ export default function Table ({ onLogin } : {
     const [ currentPage, setCurrentPage ] = useState(1);
     const [ sortColumn, setSortColumn ] = useState("rank" as SortableKey);
     const [ sortDirection, setSortDirection ] = useState("asc" as SortDirection);
-    const [ currencies, setCurrencies ] = useState([] as string[]);
+    const [ activeAux, setActiveAux ] = useState([] as string[]);
     const [ filter, setFilter] = useState("");
 
     const sortId = sortColumn + ":" + sortDirection;
@@ -64,7 +64,9 @@ export default function Table ({ onLogin } : {
             {(state.pages === -1 || sorting.getPage(currentPage).loading) && <Spinner withOverlay={true}/>}
             <table>
                 <Header {...{
-                    sortColumn, sortDirection, filter, currencies, onLogin,
+                    sortColumn, sortDirection, filter, onLogin,
+                    aux: activeAux,
+                    onAuxChange: setActiveAux,
                     onSortChange: handleSortChange,
                     onFilterChange: setFilter
                 }}/>
@@ -73,7 +75,7 @@ export default function Table ({ onLogin } : {
                         <Row {...{
                             currency,
                             key: currency.id,
-                            others: currencies
+                            others: activeAux
                         }}/>
                     ))}
                 </tbody>
@@ -82,7 +84,7 @@ export default function Table ({ onLogin } : {
                 <Pagination {...{
                     currentPage,
                     totalPages: state.pages,
-                    displayedPages: 8,
+                    displayedPages: 7,
                     onPageChange: setCurrentPage
                 }}/>
             )}

@@ -1,7 +1,7 @@
 import React from "react";
 
 import Form, { State as FormState, Props as FormProps } from "./Form";
-import TextField from "../components/TextField/TextField";
+import TextField from "components/TextField";
 
 import { CallsAPI } from "../API";
 
@@ -22,6 +22,15 @@ export default class Login extends Form<Props, State> {
 
     get valid(): boolean {
         return this.state.email.length > 0 && this.state.password.length > 0;
+    }
+    protected get submitMessage () {
+        if (this.state.email.length === 0)
+            return "User name can't be empty";
+
+        if (this.state.password.length === 0)
+            return "Please enter your password";
+
+        return "Log in to the system";
     }
 
     protected renderFields () {

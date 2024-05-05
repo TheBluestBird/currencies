@@ -46,7 +46,11 @@ export function toFormattedString (value: number): string {
 }
 
 const parsingReg = /,+/g;
+const validatingReg = /^-?(0|[1-9]\d*)(\.\d+)?(e-?(0|[1-9]\d*))?$/i;
 export function fromFormattedString (string: string): number {
     const cleanedNumber = string.replace(parsingReg, '');
+    if (!validatingReg.test(cleanedNumber))
+        return NaN;
+
     return parseFloat(cleanedNumber);
 }

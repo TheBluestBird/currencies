@@ -20,7 +20,11 @@
     "noImplicitAny": true,
     "sourceMap": true,
     "jsx": "react",
-    "outDir": "./dist/"
+    "outDir": "./dist/",
+    "types": ["jest", "@testing-library/jest-dom"],
+    "paths": {
+      "components/*": ["./src/components/*"]
+    }
   },
   "include": [
     "src"

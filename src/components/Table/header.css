@@ -12,7 +12,7 @@ th.sortable {
 }
 
 th.sortable::after {
-    content: ' ';
+    content: '↕';
     display: inline-block;
     width: 0;
     height: 0;
@@ -20,11 +20,11 @@ th.sortable::after {
 }
 
 th.sortable.asc::after {
-    content: '▲';
+    content: '↑';
 }
 
 th.sortable.desc::after {
-    content: '▼';
+    content: '↓';
 }
 
 th {
@@ -40,8 +40,33 @@ th {
     justify-content: space-between;
     align-items: center;
     font-weight: normal;
+    gap: var(--element-gap);
 }
 
 .header-container > .text-input {
     margin: 0;
+}
+.header-container > i {
+    text-align: right;
+}
+
+
+ul.aux-bar {
+    display: flex;
+    flex-direction: row;
+    justify-content: end;
+    flex-grow: 1;
+    gap: var(--block-gap);
+    padding: 0;
+    margin: 0;
+}
+
+ul.aux-bar  > li {
+    list-style-type: none;
+}
+
+@media (max-width: 768px) {
+    ul.aux-bar button {
+        padding: var(--block-half-padding);
+    }
 }

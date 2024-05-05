@@ -34,3 +34,13 @@ ul.userbar > li > button {
         padding: 0 2em 2em;
     }
 }
+
+@media (min-width: 768px) {
+    ul.userbar p.user-title {
+        overflow: hidden;
+        max-width: 130px;
+        word-break: keep-all;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+}

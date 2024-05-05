@@ -1,8 +1,8 @@
 import React, {ReactNode} from "react";
 
-import Button, { Alignment } from "../Button/Button";
-import TextField from "../TextField/TextField";
-import Dropdown from "../Dropdown/Dropdown";
+import Button from "components/Button";
+import TextField from "components/TextField";
+import Dropdown from "components/Dropdown";
 
 import { AUX } from "../../data/currency";
 
@@ -52,7 +52,8 @@ export default function CurrencyList ({ currencies, onChange, onSave, children }
                         const copy = currencies.slice();
                         copy[index].comment = comment;
                         onChange(copy);
-                    }
+                    },
+                    placeholder: "Enter a comment"
                 }}/>
                 <Button {...{
                     onClick: () => {
@@ -60,7 +61,8 @@ export default function CurrencyList ({ currencies, onChange, onSave, children }
                         copy.splice(index, 1);
                         onChange(copy);
                     },
-                    tooltip: "Remove this currency"
+                    tooltip: "Remove this currency",
+                    danger: true
                 }}>-</Button>
             </div>
         )}

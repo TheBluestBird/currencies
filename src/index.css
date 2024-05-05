@@ -6,6 +6,8 @@
     --color4h: #0056b3;
     --color5: #ddd;
     --color-disabled: #ccc;
+    --color-danger: #dc3545;
+    --color-dangerh: #a61a27;
 
     --foreground1: black;
     --foreground2: white;
@@ -15,9 +17,10 @@
     --field-border: 2px solid var(--color3);
     --field-padding: 1em 30px 1em 1em;
     --field-height: 3em;
+    --field-disabled: #eee;
 
     --border-radius: 5px;
-    --transition: ease 0.3s;
+    --transition: ease .3s;
     --background-transition: background-color var(--transition);
     --color-transition: color var(--transition);
     --border-transition: border-color var(--transition);
@@ -28,12 +31,14 @@
     --text-huge: 1.5em;
 
     --block-padding: 0.5em 1em;
+    --block-half-padding: 0.25em 0.5em;
     --double-height-padding: 1em;
     --block-gap: 0.5em;
     --element-gap: 1em;
 
     --shadow1: 0 3px 5px rgba(0, 0, 0, 0.2);
-    --shadow2: 0 5px 10px rgba(0, 0, 0, 0.2)
+    --shadow2: 0 5px 10px rgba(0, 0, 0, 0.2);
+    --shadow3: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 hr {
