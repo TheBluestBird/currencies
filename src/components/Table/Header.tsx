@@ -6,6 +6,7 @@ import { useAuth } from "../../context/Auth";
 import { SortableKey } from "../../data/currency";
 import { SortDirection } from "../../API";
 
+import { Link } from "react-router-dom";
 import TextField from "components/TextField";
 import { ToggleButton } from "components/Button";
 
@@ -36,13 +37,13 @@ export default function Header({
                 </th>
             </tr>
             <tr>
-                <th className={`sortable ${sortColumn === 'rank' ? sortDirection : ''}`} style={{width: "6em"}}
+                <th className={`sortable ${sortColumn === 'rank' ? sortDirection : ''}`} style={{width: "6em", minWidth: "5em"}}
                     onClick={() => onSortChange("rank")}>Rank
                 </th>
                 <th className={`sortable ${sortColumn === 'name' ? sortDirection : ''}`}
                     onClick={() => onSortChange("name")}>Name
                 </th>
-                <th className={`sortable ${sortColumn === 'price' ? sortDirection : ''}`} style={{width: "10em"}}
+                <th className={`sortable ${sortColumn === 'price' ? sortDirection : ''}`} style={{width: "9em"}}
                     onClick={() => onSortChange("price")}>Price (USD)
                 </th>
                 {aux.map(currency => (
@@ -61,7 +62,7 @@ function AuxBar ({ currencies, onChange, onLogin } : {
     const { state } = useAuth();
     if (state.user.length === 0)
         return (<i>
-            Please <a href="#" onClick={onLogin}>Login</a> to control additional currencies
+            Please <Link to="" onClick={onLogin}>Login</Link> to control additional currencies
         </i>);
 
     if (!state.data)

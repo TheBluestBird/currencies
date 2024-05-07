@@ -9,6 +9,7 @@ import TextField from "components/TextField";
 import Button, { Alignment } from "components/Button";
 import CurrencyList from "components/CurrencyList";
 import { AUX } from "../data/currency";
+import {Link} from "react-router-dom";
 
 interface State {
     userName: string;
@@ -56,8 +57,8 @@ export default class Settings extends Page<PageProps, State> {
                 flexGrow: 1
             }}>
                 <h2>This page is for registered users only!</h2>
-                <p>To see it you need to <a href="#" onClick={this.props.onLogin}>Login</a> to your account.</p>
-                <p>If you don't have an account you may <a href="#" onClick={this.props.onSignup}>Signup</a>!</p>
+                <p>To see it you need to <Link to="" onClick={this.props.onLogin}>Login</Link> to your account.</p>
+                <p>If you don't have an account you may <Link to="" onClick={this.props.onSignup}>Signup</Link>!</p>
             </div>
 
         return <div className="page-content" style={{

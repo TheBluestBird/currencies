@@ -10,7 +10,7 @@ export default function Row ({ currency, others }: {
         const value = currency.values.get(other);
         let formatted: string;
         if (value === undefined)
-            formatted = "Unknown";
+            formatted = "Loading...";
         else
             formatted = toFormattedString(value);
 

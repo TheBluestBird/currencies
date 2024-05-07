@@ -124,6 +124,7 @@ export class State {
     orders = new Map<string, Sorting>;
     indices = new Map<IndexableKey, PossibleIndex>;
     pages = -1;
+    requestingAux = new Map<string, Set<number>>;
 
     copy () {
         const newState = new State();
@@ -138,6 +139,9 @@ export class State {
         for (const [field, index] of this.indices)
             newState.indices.set(field, index.copy());
 
+        for (const [aux, ids] of this.requestingAux)
+            newState.requestingAux.set(aux, new Set(ids));
+
         return newState;
     }
     getSorting (sortId: string): Sorting {
@@ -149,6 +153,32 @@ export class State {
         this.orders.set(sortId, srt);
 
         return srt;
+    }
+    getInProgressAuxIds (aux: string) {
+        const set = this.requestingAux.get(aux);
+        if (set)
+            return set;
+
+        const st = new Set<number>;
+        this.requestingAux.set(aux, st);
+
+        return st;
+    }
+    getIdsWithoutAuxCurrency (sortId: string, pageIndex: number, aux: string): Set<number> {
+        const result = new Set<number>;
+        const sort = this.orders.get(sortId);
+        if (!sort)
+            return result;
+
+        const inProgress = this.getInProgressAuxIds(aux);
+        const page = sort.getPage(pageIndex);
+        for (const id of page.order) {
+            const currency = this.currencies.get(id) as Currency;
+            if (!currency.values.has(aux) && !inProgress.has(id))
+                result.add(id);
+        }
+
+        return result;
     }
     getSortedCurrencies (sortId: string, page: number, filter: string = ""): Currency[] {
         const sort = this.orders.get(sortId);
@@ -219,13 +249,19 @@ export enum Action {
     requestByOrder,
     successByOrder,
     failureByOrder,
-    setAmountOfRecords
+    setAmountOfRecords,
+    beginEnrich,
+    successEnrich,
+    failureEnrich
 }
 type CurrencyAction =
     | { type: Action.requestByOrder; sorting: string, page: number }
     | { type: Action.successByOrder; sorting: string; result: Currency[], page: number }
     | { type: Action.failureByOrder; sorting: string; message: string, page: number }
     | { type: Action.setAmountOfRecords; amount: number }
+    | { type: Action.beginEnrich; payload: Map<string, Set<number>> }
+    | { type: Action.successEnrich; payload: Map<string, Map<number, number>> }
+    | { type: Action.failureEnrich; payload: Map<string, Set<number>> }
 
 const initialState = new State();
 
@@ -251,6 +287,31 @@ function currencyReducer (state: State, action: CurrencyAction): State {
             break;
         case Action.setAmountOfRecords:
             newState.pages = Math.ceil(action.amount / pageSize);
+            break;
+        case Action.beginEnrich:
+            for (const [aux, ids] of action.payload) {
+                const inProgress = newState.getInProgressAuxIds(aux);
+                for (const id of ids)
+                    inProgress.add(id);
+            }
+            break;
+        case Action.successEnrich:
+            for (const [aux, data] of action.payload) {
+                for (const [id, value] of data) {
+                    const currency = newState.currencies.get(id) as Currency;
+                    currency.values.set(aux, value);
+
+                    const inProgress = newState.getInProgressAuxIds(aux);
+                    inProgress.delete(id);
+                }
+            }
+            break;
+        case Action.failureEnrich:
+            for (const [aux, ids] of action.payload) {
+                const inProgress = newState.getInProgressAuxIds(aux);
+                for (const id of ids)
+                    inProgress.delete(id);
+            }
             break;
     }
 

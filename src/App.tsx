@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {BrowserRouter as Router, Route, Routes} from "react-router-dom";
+import { HashRouter as Router, Route, Routes } from "react-router-dom";
 
 import NavBar from "components/NavBar";
 import Modal from "components/Modal";
@@ -37,7 +37,10 @@ function App() {
 
     return (
         <Router>
-            <NavBar {...{pages, onSignup, onLogin: onLogin}}/>
+            <NavBar {...{
+                pages, onSignup, onLogin,
+                title: "Currencies demo"
+            }}/>
             <Routes>{
                 pages.map((Page) => <Route {...{
                     path: Page.path,

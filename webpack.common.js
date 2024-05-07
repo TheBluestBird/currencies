@@ -1,14 +1,17 @@
 const path = require('path');
+const webpack = require("webpack");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
-require('dotenv').config()
+
+if (process.env.npm_lifecycle_script.indexOf(".prod") !== -1)
+    require('dotenv').config({ path: path.resolve(__dirname, '.env.prod') })
+else
+    require('dotenv').config()
 
 module.exports = {
     entry: {
         index: './src/index.tsx'
     },
-    devtool: 'inline-source-map',
-    mode: "development",
     module: {
         rules: [
             {
@@ -42,36 +45,17 @@ module.exports = {
             }]
         }),
         new HtmlWebpackPlugin({
-            title: "Template",
+            title: "Currencies",
             template: "public/index.html",
             filename: "[name].html"
+        }),
+        new webpack.DefinePlugin({
+            API_URL: JSON.stringify(process.env.API_URL)
         })
     ],
     output: {
         filename: '[name].bundle.js',
         path: path.resolve(__dirname, 'dist'),
         clean: true
-    },
-    devServer: {
-        static: './dist',
-        compress: true,
-        port: 9000,
-        historyApiFallback: {
-            index: 'index.html'
-        },
-        proxy: [
-            {
-                context: ["/api"],
-                target: process.env.CMC_HOST,
-                changeOrigin: true,
-                pathRewrite: {'^/api' : ''},
-                headers: {
-                    'X-CMC_PRO_API_KEY': process.env.CMC_TOKEN
-                }
-            }
-        ]
-    },
-    optimization: {
-        runtimeChunk: 'single'
     }
 };

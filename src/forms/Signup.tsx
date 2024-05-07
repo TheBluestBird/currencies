@@ -2,6 +2,7 @@ import React from "react";
 
 import Form, {State as FormState, Props as FormProps} from "./Form";
 import TextField from "components/TextField";
+import { Link } from "react-router-dom";
 
 import { CallsAPI } from "../API";
 
@@ -84,15 +85,15 @@ export default class Signup extends Form<Props, State> {
     }
     protected renderLastPart() {
         return (<p style={{textAlign: "center", marginBottom: 0}}>
-            Already have an account? <a
-            href="#"
+            Already have an account? <Link
+            to=""
             onClick={e => {
                 e.preventDefault();
                 if (this.props.onSwitch)
                     this.props.onSwitch();
             }}
             role="button"
-        >Log in!</a>
+        >Log in!</Link>
         </p>)
     }
 }

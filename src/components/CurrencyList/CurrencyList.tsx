@@ -1,14 +1,13 @@
-import React, {ReactNode} from "react";
+import React, { ReactNode, useState, useEffect } from "react";
 
 import Button from "components/Button";
 import TextField from "components/TextField";
 import Dropdown from "components/Dropdown";
 
 import { AUX } from "../../data/currency";
+import { fiat } from "../../API";
 
-const available = ["EUR", "GBP", "JPY"];
 const invalidMessage = "You need to fill up all currencies and a comments before doing this";
-
 
 export default function CurrencyList ({ currencies, onChange, onSave, children } : {
     currencies: AUX[];
@@ -16,6 +15,15 @@ export default function CurrencyList ({ currencies, onChange, onSave, children }
     onSave?: () => void,
     children?: ReactNode
 }) {
+    const [available, setAvailable] = useState([] as string[]);
+    useEffect(() => {
+        fiat().then(list => {
+            setAvailable(list);
+        }, err => {
+            setAvailable(["EUR", "GBP", "JPY", "CNY"]);
+        })
+    }, []);
+
     let invalid = false;
     let used = new Set<string>();
     for (const currency of currencies) {
@@ -71,7 +79,7 @@ export default function CurrencyList ({ currencies, onChange, onSave, children }
             justifyContent: "space-between"
         }}>
             <Button {...{
-                disabled: invalid || avl.length === 0,
+                disabled: invalid || avl.length === 0 || currencies.length >= 5,
                 onClick: () => {
                     const copy = currencies.slice();
                     copy.push({symbol: "", comment: ""});
@@ -81,7 +89,9 @@ export default function CurrencyList ({ currencies, onChange, onSave, children }
                     invalidMessage:
                     avl.length === 0 ?
                         "You've added all currencies we could offer":
-                        "Add new currency"
+                        currencies.length >= 5 ?
+                            "You can not add more than 5 currencies":
+                            "Add new currency"
             }}
             >+</Button>
             <Button {...{

@@ -30,9 +30,9 @@ export default class Convertor extends Page<{}, State> {
     context!: React.ContextType<typeof CurrencyContext>
 
     state = {
-        fromValue: "0",
+        fromValue: "1",
         fromCurrency: "USD",
-        toValue: "0",
+        toValue: "1",
         toCurrency: "USD",
         currenciesReady: false,
         currencies: ["USD"]
@@ -41,6 +41,7 @@ export default class Convertor extends Page<{}, State> {
     renderContent(): React.JSX.Element {
         return (<div className="page-content">
             {!this.state.currenciesReady && <Spinner withOverlay={true}/>}
+            <p>Here you can convert the most popular crypto currencies</p>
             <div style={{
                 display: "flex",
                 flexDirection: "row",
@@ -92,8 +93,22 @@ export default class Convertor extends Page<{}, State> {
                 }}
                 />
             </div>
+            <p>
+                To start conversion choose the currencies and start typing the values<br/>
+                the value in the other field would reflect the amount in other currency.<br/>
+                While you're typing in one field the output formatting is applied<br/>
+                only to the other field, not to mess up you cursor position.<br/>
+                <br/>
+                The values are requested once you have opened this page <br/>
+                from <a href="https://coinmarketcap.com">coinmarketcap.com</a> and can be out of date.<br/>
+                <br/>
+                This interface serves purely demonstration purposes,<br/>
+                I bear no responsibility for any kind of damage<br/>
+                the user might have caused relying on it.
+            </p>
         </div>)
     }
+
     componentDidMount() {
         this.loadCurrencies();
     }
@@ -158,19 +173,19 @@ export default class Convertor extends Page<{}, State> {
 
         if (!source) {
             if (!destination) {
-                return "0" //TODO;
+                return "0" //TODO conversion from fiat to fiat;
             } else {
                 if (src === 'USD')
                     return  toFormattedString(value / destination.price);
                 else
-                    return "0"; //TODO;
+                    return "0"; //TODO conversion from fiat to crypto;
             }
         } else {
             if (!destination) {
                 if (dst === 'USD')
                     return toFormattedString(source.price * value);
                 else
-                    return "0" //TODO;
+                    return "0" //TODO conversion from crypto to fiat;
             } else {
                 return toFormattedString(source.price * value / destination.price);
             }

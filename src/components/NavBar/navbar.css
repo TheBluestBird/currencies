@@ -72,6 +72,8 @@ nav.main > button.burger {
     color: var(--foreground2);
     font-size: 2rem;
     padding: 0;
+    box-shadow: none;
+    transform: none;
 }
 
 @media (max-width: 768px) {

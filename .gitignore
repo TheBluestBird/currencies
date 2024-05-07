@@ -14,6 +14,7 @@ package-lock.json
 # misc
 .idea
 .env
+.env.prod
 .DS_Store
 .env.local
 .env.development.local

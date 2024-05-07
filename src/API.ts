@@ -1,5 +1,4 @@
 import { Currency, SortableKey, AUX } from "./data/currency";
-
 const apiDelay = 2000;
 
 export type CallResult = Promise<{
@@ -204,10 +203,13 @@ function makeId (length: number) {
     return result;
 }
 
-const server = '/api/';
+// const server = '/api/';
+const server = API_URL;
 const eps = {
     list: "v1/cryptocurrency/listings/latest",
-    meta: "v1/global-metrics/quotes/latest"
+    meta: "v1/global-metrics/quotes/latest",
+    quote: "v2/cryptocurrency/quotes/latest",
+    fiat: "v1/fiat/map"
 };
 
 export type SortDirection = 'asc' | 'desc';
@@ -219,7 +221,12 @@ const keyConversion = {
     price: "price"
 };
 
-export async function list (first: number, count: number, sort: SortableKey, direction: SortDirection) {
+export async function list (
+    first: number,
+    count: number,
+    sort: SortableKey,
+    direction: SortDirection
+) {
     const key = keyConversion[sort];
     if (key === "market_cap")
         if (direction === "asc")
@@ -241,15 +248,9 @@ export async function list (first: number, count: number, sort: SortableKey, dir
                 'Accept': 'application/json',
             }
         });
+        const data = await parseResult(response);
 
-        if (!response.ok)
-            throw new Error(`HTTP error! status: ${response.status}`);
-
-        const data = await response.json();
-        if (data.status.errorCode)
-            throw new Error(data.status.error_message)
-
-        for (const obj of data.data) {
+        for (const obj of data) {
             const currency = {
                 id: obj.id,
                 symbol: obj.symbol,
@@ -269,25 +270,79 @@ export async function list (first: number, count: number, sort: SortableKey, dir
 
             result.push(currency);
         }
-        if (data.data.length === 0)
+        if (data.length === 0)
             break;
     }
 
     return result;
 }
 
+export async function quote (ids: Set<number>, currency: string) {
+    const url = server + eps.quote
+        + "?id=" + Array.from(ids)
+        + "&convert=" + currency;
+
+    const response = await fetch(url, {
+        method: 'GET', // Method is GET
+        headers: {
+            'Accept': 'application/json',
+        }
+    });
+    const data = await parseResult(response);
+
+    const result = new Map<number, number>;
+    for (let id in data) {
+        if (Object.hasOwn(data, id)) {
+            const quote = data[id].quote[currency];
+            result.set(parseInt(id), quote.price);
+        }
+    }
+    return result;
+}
+
 export async function meta () {
     const res = await fetch(server + eps.meta);
-    if (!res.ok)
-        throw new Error(`HTTP error! status: ${res.status}`);
-
-    const data = await res.json();
-    if (data.status.errorCode)
-        throw new Error(data.status.error_message);
+    const data = await parseResult(res);
 
     return {
-        active: data.data.active_cryptocurrencies as number,
-        total: data.data.total_cryptocurrencies as number,
-        pairs: data.data.active_market_pairs as number
+        active: data.active_cryptocurrencies as number,
+        total:data.total_cryptocurrencies as number,
+        pairs: data.active_market_pairs as number
     }
+}
+
+export async function fiat () {
+    const res = await fetch(server + eps.fiat);
+    const data = await parseResult(res);
+
+    const result: string[] = [];
+    for (const obj of data)
+        result.push(obj.symbol);
+
+    return result
+}
+
+async function parseResult (response: Response) {
+    let errMessage;
+    let json
+    try {
+        json = await response.json();
+        if (response.ok)
+            return json.data;
+
+        errMessage = json.status.error_message;
+        //srsly!? They sometimes send the message that looks like this:
+        //      "Bla bla bla I'm an error
+        //Who does that, who opens a quote and doesn't close it?!
+        if (errMessage[0] === '"')
+            errMessage = errMessage.slice(1);
+
+        if (errMessage[errMessage.length - 1] === '"')
+            errMessage = errMessage.slice(0, errMessage.length - 1);
+    } catch (e) {}
+
+    if (errMessage)
+        throw new Error(errMessage);
+    else
+        throw new Error(`HTTP error status: ${response.status}`);
 }

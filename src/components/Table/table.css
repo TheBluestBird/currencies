@@ -2,7 +2,8 @@
     width: 100%;
     max-width: 960px;
     margin: var(--element-gap) auto;
-    overflow: hidden;
+    overflow-y: hidden;
+    overflow-x: auto;
     border-radius: var(--border-radius);
     box-shadow: var(--shadow1);
     background-color: var(--color1);
@@ -19,11 +20,21 @@ table {
     border-collapse: collapse;
 }
 
-td {
+tr:not(.error) td {
     text-align: left;
     padding: var(--double-height-padding);
     font-size: var(--text-normal);
     border-bottom: 1px solid var(--color5);
+}
+
+tr.error td {
+    text-align: center;
+    padding: var(--double-height-padding);
+    font-size: var(--text-normal);
+    margin: var(--double-height-padding);
+    color: var(--color3);
+    font-style: italic;
+    height: 200px;
 }
 
 @media (max-width: 768px) {
